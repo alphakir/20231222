@@ -1,0 +1,35 @@
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+
+# Create a sample DataFrame (replace this with your actual DataFrame)
+data = {'Column1': [1, 2, 3], 'Column2': ['A', 'B', 'C']}
+df = pd.DataFrame(data)
+
+# Specify the Excel file and sheet name
+excel_file_path = 'path/to/your/excel/file.xlsx'
+sheet_name = 'Sheet1'  # Replace with the actual sheet name
+
+# Load the existing Excel workbook
+workbook = load_workbook(excel_file_path)
+
+# Select the sheet
+sheet = workbook[sheet_name]
+
+# Clear existing data in the sheet, starting from A1
+for row in sheet.iter_rows(min_row=1, max_col=sheet.max_column, max_row=sheet.max_row):
+    for cell in row:
+        cell.value = None
+
+# Get the header and data rows from the DataFrame
+rows = list(dataframe_to_rows(df, index=False, header=True))
+
+# Paste the DataFrame data into the Excel sheet starting from cell A1
+for row_index, row in enumerate(rows, start=1):
+    for col_index, value in enumerate(row, start=1):
+        sheet.cell(row=row_index, column=col_index, value=value)
+
+# Save the changes to the Excel file
+workbook.save(excel_file_path)
+
+print("DataFrame pasted into Excel sheet successfully.")
